@@ -1,27 +1,31 @@
-import axios from 'axios';
-import { LoginFormData, RegisterFormData } from '../types/auth';
+import axios from "axios";
+import { LoginFormData, RegisterFormData } from "../types/auth";
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = "http://localhost:3000/api";
 
 const authApi = axios.create({
   baseURL: `${API_URL}/auth`,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 export const login = async (data: LoginFormData) => {
-  const response = await authApi.post('/login', data);
+  const response = await authApi.post("/login", data);
   return response.data;
 };
 
 export const register = async (data: RegisterFormData) => {
-  const response = await authApi.post('/register', data);
+  const response = await authApi.post("/register", {
+    name: data.name,
+    email: data.email,
+    password: data.password,
+  });
   return response.data;
 };
 
 export const getCurrentUser = async (token: string) => {
-  const response = await authApi.get('/me', {
+  const response = await authApi.get("/me", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -44,9 +48,9 @@ export const setupAxiosInterceptors = (token: string | null) => {
     (response) => response,
     (error) => {
       if (error.response?.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
       }
       return Promise.reject(error);
     }
