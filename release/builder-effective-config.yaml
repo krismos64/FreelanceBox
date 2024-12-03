@@ -1,0 +1,30 @@
+directories:
+  output: release
+  buildResources: build
+appId: com.gestionentreprise.app
+productName: Gestion Entreprise
+files:
+  - filter:
+      - dist/**/*
+      - electron/**/*
+mac:
+  category: public.app-category.business
+  target:
+    - dmg
+  icon: build/icon.icns
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+dmg:
+  contents:
+    - x: 130
+      'y': 220
+    - x: 410
+      'y': 220
+      type: link
+      path: /Applications
+  window:
+    width: 540
+    height: 380
+electronVersion: 29.4.6
