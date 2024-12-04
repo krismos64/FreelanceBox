@@ -5,7 +5,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale/fr";
+import { fr } from "date-fns/locale";
+import { toast } from "react-toastify";
 
 interface Event {
   id: string;
@@ -24,6 +25,7 @@ const Planning: React.FC = () => {
     end: "",
     description: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchEvents();
@@ -31,51 +33,87 @@ const Planning: React.FC = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/events");
+      const token = localStorage.getItem("token") || "";
+      if (!token) {
+        toast.error("Token invalide. Veuillez vous reconnecter.");
+        return;
+      }
+
+      const response = await axios.get("http://localhost:3000/api/events", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setEvents(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur lors de la récupération des événements:", error);
+
+      const errorMessage = error.response
+        ? error.response.data.message || "Une erreur s'est produite"
+        : "Impossible de récupérer les événements";
+
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
-  const handleDateSelect = (selectInfo: any) => {
-    const startDate = new Date(selectInfo.start);
-    const endDate = new Date(selectInfo.end);
-
-    setNewEvent({
-      title: "",
-      start: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
-      end: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
-      description: "",
-    });
-    setShowModal(true);
-  };
-
-  const handleEventClick = (clickInfo: any) => {
-    if (window.confirm("Voulez-vous supprimer cet événement ?")) {
-      const eventId = clickInfo.event.id;
-      handleDeleteEvent(eventId);
+  const validateEvent = (): boolean => {
+    if (!newEvent.title.trim()) {
+      toast.error("Le titre de l'événement est obligatoire.");
+      return false;
     }
-  };
-
-  const handleDeleteEvent = async (eventId: string) => {
-    try {
-      await axios.delete(`http://localhost:3000/api/events/${eventId}`);
-      await fetchEvents();
-    } catch (error) {
-      console.error("Erreur lors de la suppression de l'événement:", error);
+    if (!newEvent.start || !newEvent.end) {
+      toast.error("Les dates de début et de fin sont obligatoires.");
+      return false;
     }
+    if (new Date(newEvent.start) >= new Date(newEvent.end)) {
+      toast.error("La date de fin doit être après la date de début.");
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateEvent()) return;
+
+    const token = localStorage.getItem("token");
+
     try {
-      await axios.post("http://localhost:3000/api/events", newEvent);
+      await axios.post("http://localhost:3000/api/events", newEvent, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setShowModal(false);
-      await fetchEvents();
+      fetchEvents();
       setNewEvent({ title: "", start: "", end: "", description: "" });
+      toast.success("Événement ajouté avec succès !");
     } catch (error) {
       console.error("Erreur lors de la création de l'événement:", error);
+      toast.error(
+        "Une erreur est survenue lors de la création de l'événement."
+      );
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      await axios.delete(`http://localhost:3000/api/events/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success("Événement supprimé avec succès !");
+      fetchEvents(); // Recharge la liste des événements après suppression
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'événement:", error);
+      toast.error(
+        "Une erreur est survenue lors de la suppression de l'événement."
+      );
     }
   };
 
@@ -95,20 +133,27 @@ const Planning: React.FC = () => {
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
           locale="fr"
-          selectable={true}
-          selectMirror={true}
-          dayMaxEvents={true}
-          weekends={true}
+          selectable
+          selectMirror
+          dayMaxEvents
+          weekends
+          firstDay={1} // Débute le calendrier le lundi
           events={events}
-          select={handleDateSelect}
-          eventClick={handleEventClick}
-          height="auto"
-          buttonText={{
-            today: "Aujourd'hui",
-            month: "Mois",
-            week: "Semaine",
-            day: "Jour",
+          select={(info) => {
+            setNewEvent({
+              title: "",
+              start: format(info.start, "yyyy-MM-dd'T'HH:mm:ss"),
+              end: format(info.end, "yyyy-MM-dd'T'HH:mm:ss"),
+              description: "",
+            });
+            setShowModal(true);
           }}
+          eventClick={(info) => {
+            if (window.confirm("Voulez-vous supprimer cet événement ?")) {
+              handleDeleteEvent(info.event.id);
+            }
+          }}
+          height="auto"
         />
       </div>
 
@@ -120,10 +165,14 @@ const Planning: React.FC = () => {
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Titre
                 </label>
                 <input
+                  id="title"
                   type="text"
                   value={newEvent.title}
                   onChange={(e) =>
@@ -135,16 +184,58 @@ const Planning: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description
                 </label>
                 <textarea
+                  id="description"
                   value={newEvent.description}
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, description: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={3}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="start"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Début
+                </label>
+                <input
+                  id="start"
+                  type="datetime-local"
+                  value={newEvent.start}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, start: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="end"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Fin
+                </label>
+                <input
+                  id="end"
+                  type="datetime-local"
+                  value={newEvent.end}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, end: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
                 />
               </div>
 
@@ -164,6 +255,7 @@ const Planning: React.FC = () => {
                 </button>
               </div>
             </form>
+            {error && <p className="text-red-500">{error}</p>}
           </div>
         </div>
       )}

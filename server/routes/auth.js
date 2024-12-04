@@ -7,11 +7,24 @@ import pool from "../config/database.js";
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
-router.post("/register", async (req, res) => {
+// Middleware de validation pour l'enregistrement
+const validateRegisterInput = (req, res, next) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "Tous les champs sont requis" });
+  }
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+  }
+  next();
+};
+
+router.post("/register", validateRegisterInput, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Vérifier si l'email existe déjà
     const [existingUsers] = await pool.query(
       "SELECT * FROM users WHERE email = ?",
       [email]
@@ -21,11 +34,9 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Cet email est déjà utilisé" });
     }
 
-    // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
     const userId = uuidv4();
 
-    // Créer l'utilisateur
     await pool.query(
       "INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)",
       [userId, name, email, hashedPassword]
@@ -34,7 +45,7 @@ router.post("/register", async (req, res) => {
     res.status(201).json({ message: "Compte créé avec succès" });
   } catch (error) {
     console.error("Erreur lors de la création du compte:", error);
-    res.status(500).json({ message: "Erreur lors de la création du compte" });
+    res.status(500).json({ message: "Une erreur interne est survenue." });
   }
 });
 
@@ -42,7 +53,6 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Rechercher l'utilisateur
     const [users] = await pool.query("SELECT * FROM users WHERE email = ?", [
       email,
     ]);
@@ -54,7 +64,6 @@ router.post("/login", async (req, res) => {
         .json({ message: "Email ou mot de passe incorrect" });
     }
 
-    // Vérifier le mot de passe
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return res
@@ -62,12 +71,10 @@ router.post("/login", async (req, res) => {
         .json({ message: "Email ou mot de passe incorrect" });
     }
 
-    // Générer le token
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
       expiresIn: "24h",
     });
 
-    // Ne pas renvoyer le mot de passe
     const { password: _, ...userWithoutPassword } = user;
 
     res.json({
@@ -76,7 +83,7 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur lors de la connexion:", error);
-    res.status(500).json({ message: "Erreur lors de la connexion" });
+    res.status(500).json({ message: "Une erreur interne est survenue." });
   }
 });
 
