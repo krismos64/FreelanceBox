@@ -30,6 +30,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/clients", authMiddleware, clientsRoutes);
 app.use("/api/documents", authMiddleware, documentsRoutes);
 app.use("/api/settings", authMiddleware, settingsRoutes);
+app.use("/api/events", require("./routes/events"));
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {

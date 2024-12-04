@@ -18,6 +18,7 @@ import ChecklistPage from "./pages/ChecklistPage";
 import CompanyPage from "./pages/CompanyPage";
 import CreateDocument from "./pages/CreateDocument";
 import EditDocument from "./pages/EditDocument";
+import Planning from "./components/Planning";
 import { AppProvider } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
 import { useNavigationSound } from "./utils/sound";
@@ -57,6 +58,7 @@ function App() {
                   }
                 >
                   <Route path="/" element={<Dashboard />} />
+                  <Route path="/planning" element={<Planning />} />
                   <Route path="/quotes" element={<QuoteList />} />
                   <Route
                     path="/quotes/new"

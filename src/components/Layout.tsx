@@ -9,6 +9,7 @@ import {
   Building2,
   LogOut,
   User,
+  Calendar,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "./ThemeToggle";
@@ -39,9 +40,10 @@ const Layout: React.FC = () => {
         <div className="flex flex-col h-[calc(100vh-6rem)] justify-between">
           <nav className="space-y-2">
             <NavItem icon={<LayoutGrid />} text="Tableau de bord" to="/" />
+            <NavItem icon={<Calendar />} text="Planning" to="/planning" />
+            <NavItem icon={<Users />} text="Clients" to="/clients" />
             <NavItem icon={<FileText />} text="Devis" to="/quotes" />
             <NavItem icon={<FileText />} text="Factures" to="/invoices" />
-            <NavItem icon={<Users />} text="Clients" to="/clients" />
             <NavItem icon={<BarChart3 />} text="Statistiques" to="/stats" />
             <NavItem icon={<CheckSquare />} text="Checklist" to="/checklist" />
             <NavItem icon={<Building2 />} text="Mon entreprise" to="/company" />
