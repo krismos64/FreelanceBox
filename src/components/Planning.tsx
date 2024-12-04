@@ -5,8 +5,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { toast } from "react-toastify";
+import { useTheme } from "../context/ThemeContext";
 
 interface Event {
   id: string;
@@ -26,6 +26,8 @@ const Planning: React.FC = () => {
     description: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   useEffect(() => {
     fetchEvents();
@@ -118,12 +120,20 @@ const Planning: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
+    <div
+      className={`p-6 ${
+        isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-800"
+      }`}
+    >
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Planning</h2>
+        <h2 className="text-2xl font-bold">Planning</h2>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div
+        className={`rounded-lg shadow-md p-6 ${
+          isDarkMode ? "bg-gray-900" : "bg-white"
+        }`}
+      >
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -133,12 +143,24 @@ const Planning: React.FC = () => {
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
           locale="fr"
+          buttonText={{
+            today: "Aujourd'hui",
+            month: "Mois",
+            week: "Semaine",
+            day: "Jour",
+          }}
           selectable
           selectMirror
           dayMaxEvents
           weekends
           firstDay={1} // Débute le calendrier le lundi
           events={events}
+          dayHeaderClassNames={
+            () =>
+              isDarkMode
+                ? "text-white bg-gray-800" // Couleurs adaptées au mode sombre
+                : "text-gray-800 bg-gray-100" // Couleurs adaptées au mode clair
+          }
           select={(info) => {
             setNewEvent({
               title: "",
@@ -159,15 +181,17 @@ const Planning: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">
-              Nouvel événement
-            </h3>
+          <div
+            className={`rounded-lg p-8 max-w-md w-full mx-4 ${
+              isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+            }`}
+          >
+            <h3 className="text-xl font-bold mb-4">Nouvel événement</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="title"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
                   Titre
                 </label>
@@ -178,7 +202,11 @@ const Planning: React.FC = () => {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    isDarkMode
+                      ? "bg-gray-700 border-gray-600 focus:ring-gray-500"
+                      : "bg-white border-gray-300 focus:ring-blue-500"
+                  }`}
                   required
                 />
               </div>
@@ -186,7 +214,7 @@ const Planning: React.FC = () => {
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
                   Description
                 </label>
@@ -196,7 +224,11 @@ const Planning: React.FC = () => {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, description: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    isDarkMode
+                      ? "bg-gray-700 border-gray-600 focus:ring-gray-500"
+                      : "bg-white border-gray-300 focus:ring-blue-500"
+                  }`}
                   rows={3}
                 />
               </div>
@@ -204,7 +236,7 @@ const Planning: React.FC = () => {
               <div>
                 <label
                   htmlFor="start"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
                   Début
                 </label>
@@ -215,16 +247,17 @@ const Planning: React.FC = () => {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, start: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    isDarkMode
+                      ? "bg-gray-700 border-gray-600 focus:ring-gray-500"
+                      : "bg-white border-gray-300 focus:ring-blue-500"
+                  }`}
                   required
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="end"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label htmlFor="end" className="block text-sm font-medium mb-1">
                   Fin
                 </label>
                 <input
@@ -234,7 +267,11 @@ const Planning: React.FC = () => {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, end: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    isDarkMode
+                      ? "bg-gray-700 border-gray-600 focus:ring-gray-500"
+                      : "bg-white border-gray-300 focus:ring-blue-500"
+                  }`}
                   required
                 />
               </div>
@@ -243,13 +280,21 @@ const Planning: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className={`px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 ${
+                    isDarkMode
+                      ? "bg-gray-700 text-white hover:bg-gray-600 focus:ring-gray-500"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500"
+                  }`}
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 ${
+                    isDarkMode
+                      ? "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+                      : "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
+                  }`}
                 >
                   Enregistrer
                 </button>

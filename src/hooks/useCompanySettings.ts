@@ -6,28 +6,37 @@ import { CompanySettings } from '../types';
 export const useCompanySettings = () => {
   const queryClient = useQueryClient();
 
-  const { data: settings, isLoading } = useQuery({
+  // Correction de la configuration de useQuery
+  const { data: settings, isLoading, isError } = useQuery({
     queryKey: ['companySettings'],
     queryFn: fetchCompanySettings,
-    onError: () => {
-      showError('Erreur lors du chargement des paramètres de l\'entreprise');
+    onError: (error: any) => {
+      showError(
+        `Erreur lors du chargement des paramètres : ${
+          error.message || 'Inconnue'
+        }`
+      );
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: (newSettings: CompanySettings) => updateCompanySettings(newSettings),
+    mutationFn: (newSettings: CompanySettings) =>
+      updateCompanySettings(newSettings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['companySettings'] });
-      showSuccess('Paramètres de l\'entreprise mis à jour avec succès');
+      showSuccess("Paramètres de l'entreprise mis à jour avec succès");
     },
-    onError: () => {
-      showError('Erreur lors de la mise à jour des paramètres');
+    onError: (error: any) => {
+      showError(
+        `Erreur lors de la mise à jour : ${error.message || 'Inconnue'}`
+      );
     },
   });
 
   return {
     settings,
     isLoading,
+    isError,
     updateSettings: updateMutation.mutate,
   };
 };

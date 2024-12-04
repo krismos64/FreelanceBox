@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -18,8 +18,19 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
+  // Forcer le mode clair uniquement sur cette page
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+
+    // Nettoyage (optionnel, si vous souhaitez revenir au thème global lors de la navigation)
+    return () => {
+      document.documentElement.classList.remove("light");
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -34,15 +45,15 @@ const LoginPage: React.FC = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
           />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-900">
             Connexion à FreelanceBox
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-gray-600">
             Gérez votre activité en toute simplicité
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm">
+        <div className="bg-white p-8 rounded-lg shadow-sm">
           <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
             <Input
               label="Email"
@@ -64,11 +75,11 @@ const LoginPage: React.FC = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600">
               Pas encore de compte ?{" "}
               <Link
                 to="/register"
-                className="text-primary-600 hover:text-primary-500 dark:text-primary-400"
+                className="text-primary-600 hover:text-primary-500"
               >
                 Créer un compte
               </Link>
