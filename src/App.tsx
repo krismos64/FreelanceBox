@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -32,16 +37,15 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
+const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const isAuthenticated = false; // Exemple d'état utilisateur connecté
   useNavigationSound();
 
-  // Afficher le SplashScreen si nécessaire
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
-  // Afficher la page d'onboarding après le SplashScreen
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -49,10 +53,16 @@ function App() {
           <AppProvider>
             <Router>
               <Routes>
-                {/* Redirection initiale vers la page d'onboarding */}
-                <Route path="/" element={<OnboardingPage />} />
-
-                {/* Pages accessibles depuis la navigation de l'utilisateur */}
+                <Route
+                  path="/"
+                  element={
+                    isAuthenticated ? (
+                      <Navigate to="/dashboard" />
+                    ) : (
+                      <OnboardingPage />
+                    )
+                  }
+                />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
@@ -88,6 +98,7 @@ function App() {
                   <Route path="/checklist" element={<ChecklistPage />} />
                   <Route path="/company" element={<CompanyPage />} />
                 </Route>
+                <Route path="*" element={<div>404 Page Not Found</div>} />
               </Routes>
               <Toaster position="top-right" />
             </Router>
@@ -96,6 +107,6 @@ function App() {
       </ThemeProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;
