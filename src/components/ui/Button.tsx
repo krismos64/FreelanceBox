@@ -1,40 +1,45 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "danger";
+  size?: "sm" | "md" | "lg";
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  variant = 'primary',
-  size = 'md',
-  className = '',
+interface ButtonPropsWithClassName extends ButtonProps {
+  className?: string;
+}
+
+export const Button: React.FC<ButtonPropsWithClassName> = ({
+  variant = "primary",
+  size = "md",
+  className = "",
   children,
   ...props
-}) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200';
-  
-  const variantStyles = {
-    primary: 'button-primary',
-    secondary: 'button-secondary',
-    danger: 'bg-red-500 hover:bg-red-600 text-white',
+}: ButtonPropsWithClassName) => {
+  const baseStyles =
+    "inline-flex items-center justify-center font-medium rounded-lg transition-transform transform-gpu duration-200";
+
+  const variantStyles: Record<string, string> = {
+    primary: "bg-blue-500 hover:bg-blue-600 text-white",
+    secondary: "bg-gray-500 hover:bg-gray-600 text-white",
+    danger: "bg-red-500 hover:bg-red-600 text-white",
   };
 
-  const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+  const sizeStyles: Record<string, string> = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
   };
 
   return (
-    <motion.button
+    <button
       className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      onMouseDown={(e) => e.currentTarget.classList.add("scale-95")}
+      onMouseUp={(e) => e.currentTarget.classList.remove("scale-95")}
+      onMouseLeave={(e) => e.currentTarget.classList.remove("scale-95")}
       {...props}
     >
       {children}
-    </motion.button>
+    </button>
   );
 };

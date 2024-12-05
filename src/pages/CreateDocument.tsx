@@ -1,28 +1,43 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { DocumentForm } from '../components/documents/DocumentForm';
-import { Document } from '../types';
-import { useApp } from '../context/AppContext';
+import React, { useState } from "react";
+import { useApp } from "../context/AppContext";
+import { DocumentForm } from "../components/documents/DocumentForm";
+import { Document } from "../types";
 
-interface CreateDocumentProps {
-  type: 'quote' | 'invoice';
-}
+const CreateDocument: React.FC<{ type: "quote" | "invoice" }> = ({ type }) => {
+  const { state } = useApp();
 
-const CreateDocument: React.FC<CreateDocumentProps> = ({ type }) => {
-  const navigate = useNavigate();
-  const { dispatch } = useApp();
+  // Initialisation des données
+  const [newDocument] = useState<Document>({
+    id: `${Date.now()}`, // Génère un ID unique
+    type,
+    number: `DOC-${state.documents.length + 1}`, // Numérotation simple
+    date: new Date().toISOString(),
+    client: state.clients[0] || {
+      id: "",
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      postalCode: "",
+      city: "",
+    }, // Client par défaut si aucun client n'est défini
+    items: [], // Liste vide par défaut
+    status: "Généré", // Statut par défaut
+    subtotal: 0,
+    total: 0,
+    notes: "",
+    validUntil: type === "quote" ? new Date().toISOString() : undefined,
+    dueDate: type === "invoice" ? new Date().toISOString() : undefined,
+  });
 
-  const handleSubmit = (document: Document) => {
-    dispatch({ type: 'ADD_DOCUMENT', payload: document });
-    navigate(type === 'quote' ? '/quotes' : '/invoices');
-  };
+  // Gestion de la soumission
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        {type === 'quote' ? 'Nouveau devis' : 'Nouvelle facture'}
+      <h1 className="text-2xl font-bold mb-6">
+        {type === "quote" ? "Créer un devis" : "Créer une facture"}
       </h1>
-      <DocumentForm type={type} onSubmit={handleSubmit} />
+      <DocumentForm type={type} initialData={newDocument} />
     </div>
   );
 };

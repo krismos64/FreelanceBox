@@ -1,8 +1,8 @@
-import React from 'react';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
-import { ServiceItem } from '../../types';
-import { Trash2 } from 'lucide-react';
+import React from "react";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
+import { ServiceItem } from "../../types";
+import { Trash2 } from "lucide-react";
 
 interface ServiceItemFormProps {
   item: ServiceItem;
@@ -17,16 +17,16 @@ export const ServiceItemForm: React.FC<ServiceItemFormProps> = ({
 }) => {
   const handleChange = (field: keyof ServiceItem, value: string | number) => {
     const newItem = { ...item };
-    
-    if (field === 'quantity' || field === 'unitPrice') {
+
+    if (field === "quantity" || field === "unitPrice") {
       // Convertir en nombre et utiliser 0 si la valeur n'est pas valide
       const numValue = parseFloat(value.toString()) || 0;
       newItem[field] = numValue;
       newItem.total = newItem.quantity * newItem.unitPrice;
     } else {
-      newItem[field] = value;
+      newItem[field] = value as never;
     }
-    
+
     onChange(newItem);
   };
 
@@ -36,7 +36,7 @@ export const ServiceItemForm: React.FC<ServiceItemFormProps> = ({
         <Input
           label="Description"
           value={item.description}
-          onChange={(e) => handleChange('description', e.target.value)}
+          onChange={(e) => handleChange("description", e.target.value)}
         />
       </div>
       <div className="w-32">
@@ -46,7 +46,7 @@ export const ServiceItemForm: React.FC<ServiceItemFormProps> = ({
           min="1"
           step="1"
           value={item.quantity.toString()}
-          onChange={(e) => handleChange('quantity', e.target.value)}
+          onChange={(e) => handleChange("quantity", e.target.value)}
         />
       </div>
       <div className="w-32">
@@ -56,7 +56,7 @@ export const ServiceItemForm: React.FC<ServiceItemFormProps> = ({
           step="0.01"
           min="0"
           value={item.unitPrice.toString()}
-          onChange={(e) => handleChange('unitPrice', e.target.value)}
+          onChange={(e) => handleChange("unitPrice", e.target.value)}
         />
       </div>
       <div className="w-32 pt-7">

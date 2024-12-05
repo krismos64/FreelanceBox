@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { AnimatePresence } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -9,6 +8,7 @@ import { PrivateRoute } from "./components/auth/PrivateRoute";
 import Layout from "./components/Layout";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import OnboardingPage from "./pages/OnboardingPage";
 import Dashboard from "./pages/Dashboard";
 import QuoteList from "./pages/QuoteList";
 import InvoiceList from "./pages/InvoiceList";
@@ -36,10 +36,12 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   useNavigationSound();
 
+  // Afficher le SplashScreen si nécessaire
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
+  // Afficher la page d'onboarding après le SplashScreen
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -47,6 +49,10 @@ function App() {
           <AppProvider>
             <Router>
               <Routes>
+                {/* Redirection initiale vers la page d'onboarding */}
+                <Route path="/" element={<OnboardingPage />} />
+
+                {/* Pages accessibles depuis la navigation de l'utilisateur */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
@@ -57,7 +63,7 @@ function App() {
                     </PrivateRoute>
                   }
                 >
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/planning" element={<Planning />} />
                   <Route path="/quotes" element={<QuoteList />} />
                   <Route

@@ -1,0 +1,1 @@
+{"version":3,"file":"ClientActions.d.ts","sourceRoot":"","sources":["ClientActions.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAG1B,OAAO,EAAE,MAAM,EAAE,MAAM,aAAa,CAAC;AAGrC,UAAU,kBAAkB;IAC1B,MAAM,EAAE,MAAM,CAAC;IACf,MAAM,EAAE,MAAM,IAAI,CAAC;CACpB;AAED,eAAO,MAAM,aAAa,EAAE,KAAK,CAAC,EAAE,CAAC,kBAAkB,CA6BtD,CAAC"}

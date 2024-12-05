@@ -1,0 +1,1 @@
+{"version":3,"file":"DocumentPreview.d.ts","sourceRoot":"","sources":["DocumentPreview.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAC;AAIvC,UAAU,oBAAoB;IAC5B,QAAQ,EAAE,QAAQ,CAAC;IACnB,OAAO,EAAE,MAAM,IAAI,CAAC;CACrB;AAED,eAAO,MAAM,eAAe,EAAE,KAAK,CAAC,EAAE,CAAC,oBAAoB,CAoF1D,CAAC"}

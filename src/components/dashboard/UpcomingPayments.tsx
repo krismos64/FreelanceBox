@@ -1,24 +1,28 @@
-import React from 'react';
-import { Card } from '../ui/Card';
-import { useApp } from '../../context/AppContext';
-import { formatDate } from '../../utils/dateUtils';
+import React from "react";
+import { Card } from "../ui/Card";
+import { useApp } from "../../context/AppContext";
+import { formatDate } from "../../utils/dateUtils";
 
 export const UpcomingPayments: React.FC = () => {
   const { state } = useApp();
   const upcomingPayments = state.documents
     .filter(
       (doc) =>
-        doc.type === 'invoice' &&
-        doc.status !== 'paid' &&
+        doc.type === "invoice" &&
+        doc.status !== "Payé" &&
         doc.dueDate &&
         new Date(doc.dueDate) > new Date()
     )
-    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
+    .sort(
+      (a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()
+    )
     .slice(0, 5);
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Paiements à venir</h2>
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        Paiements à venir
+      </h2>
       <div className="space-y-4">
         {upcomingPayments.map((doc) => (
           <div

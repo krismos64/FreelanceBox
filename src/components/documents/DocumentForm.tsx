@@ -1,53 +1,52 @@
-import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { Card } from '../ui/Card';
-import { Input } from '../ui/Input';
-import { Select } from '../ui/Select';
-import { Button } from '../ui/Button';
-import { ServiceItemForm } from './ServiceItemForm';
-import { Document, ServiceItem, Client } from '../../types';
-import { useApp } from '../../context/AppContext';
-import { generateDocumentNumber } from '../../utils/documentUtils';
-import { generateDueDate } from '../../utils/dateUtils';
-import { Plus } from 'lucide-react';
-import { showSuccess } from '../../utils/notifications';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { Card } from "../ui/Card";
+import { Input } from "../ui/Input";
+import { Select } from "../ui/Select";
+import { Button } from "../ui/Button";
+import { ServiceItemForm } from "./ServiceItemForm";
+import { Document, ServiceItem } from "../../types";
+import { useApp } from "../../context/AppContext";
+import { generateDocumentNumber } from "../../utils/documentUtils";
+import { generateDueDate } from "../../utils/dateUtils";
+import { Plus } from "lucide-react";
+import { showSuccess } from "../../utils/notifications";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DocumentFormProps {
-  type: 'quote' | 'invoice';
+  type: "quote" | "invoice";
   initialData?: Document;
-  onSubmit: (document: Document) => void;
 }
 
 export const DocumentForm: React.FC<DocumentFormProps> = ({
   type,
   initialData,
-  onSubmit,
 }) => {
   const { state } = useApp();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   const [document, setDocument] = useState<Document>(
-    initialData || {
+    initialData ?? {
       id: uuidv4(),
       type,
       number: generateDocumentNumber(type, state.documents),
       date: today,
       client: {
-        id: '',
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        postalCode: '',
-        city: '',
+        id: "",
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        postalCode: "",
+        city: "",
       },
       items: [],
-      status: 'Généré',
+      status: "Généré",
       subtotal: 0,
       total: 0,
-      notes: '',
-      validUntil: type === 'quote' ? generateDueDate(today, 30) : undefined,
+      notes: "",
+      validUntil: type === "quote" ? generateDueDate(today, 30) : undefined,
+      dueDate: type === "invoice" ? new Date().toISOString() : undefined,
     }
   );
 
@@ -69,20 +68,23 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     }
   };
 
-  const handleDateChange = (field: 'date' | 'validUntil', value: string) => {
+  const handleDateChange = (field: "date" | "validUntil", value: string) => {
+    const dateValue = value || today;
+
     setDocument((prev) => ({
       ...prev,
-      [field]: value || today,
-      ...(field === 'date' && type === 'quote' && {
-        validUntil: generateDueDate(value || today, 30),
-      }),
+      [field]: dateValue,
+      ...(field === "date" &&
+        type === "quote" && {
+          validUntil: generateDueDate(dateValue, 30),
+        }),
     }));
   };
 
   const handleAddItem = () => {
     const newItem: ServiceItem = {
       id: uuidv4(),
-      description: '',
+      description: "",
       quantity: 1,
       unitPrice: 0,
       total: 0,
@@ -124,10 +126,9 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(document);
     showSuccess(
-      `${type === 'quote' ? 'Devis' : 'Facture'} ${
-        initialData ? 'modifié' : 'créé'
+      `${type === "quote" ? "Devis" : "Facture"} ${
+        initialData ? "modifié" : "créé"
       } avec succès`
     );
   };
@@ -141,23 +142,19 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
       >
         <Card className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Numéro"
-              value={document.number}
-              disabled
-            />
+            <Input label="Numéro" value={document.number} disabled />
             <Input
               label="Date"
               type="date"
               value={document.date}
-              onChange={(e) => handleDateChange('date', e.target.value)}
+              onChange={(e) => handleDateChange("date", e.target.value)}
             />
-            {type === 'quote' && (
+            {type === "quote" && (
               <Input
                 label="Valable jusqu'au"
                 type="date"
-                value={document.validUntil || ''}
-                onChange={(e) => handleDateChange('validUntil', e.target.value)}
+                value={document.validUntil ?? ""}
+                onChange={(e) => handleDateChange("validUntil", e.target.value)}
               />
             )}
             <Select
@@ -165,7 +162,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
               value={document.client.id}
               onChange={(e) => handleClientChange(e.target.value)}
               options={[
-                { value: '', label: 'Sélectionner un client' },
+                { value: "", label: "Sélectionner un client" },
                 ...state.clients.map((client) => ({
                   value: client.id,
                   label: client.name,
@@ -182,7 +179,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
               >
@@ -221,21 +218,25 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
           </div>
         </Card>
 
-        <Card className="mb-6">
-          <Input
-            label="Notes"
-            as="textarea"
+        <div className="mb-6">
+          <label htmlFor="notes" className="block text-sm font-medium">
+            Notes
+          </label>
+          <textarea
+            id="notes"
             rows={4}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             value={document.notes}
             onChange={(e) =>
               setDocument((prev) => ({ ...prev, notes: e.target.value }))
             }
           />
-        </Card>
+        </div>
 
         <div className="flex justify-end">
           <Button type="submit">
-            {initialData ? 'Mettre à jour' : 'Créer'} {type === 'quote' ? 'le devis' : 'la facture'}
+            {initialData ? "Mettre à jour" : "Créer"}{" "}
+            {type === "quote" ? "le devis" : "la facture"}
           </Button>
         </div>
       </motion.div>

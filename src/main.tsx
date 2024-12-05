@@ -1,14 +1,18 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
-import './index.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import OnboardingPage from "./pages/OnboardingPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
 
-const container = document.getElementById('root');
-if (!container) throw new Error('Failed to find the root element');
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<OnboardingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
-const root = createRoot(container);
-root.render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+export default App;

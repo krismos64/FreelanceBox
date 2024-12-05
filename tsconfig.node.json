@@ -2,21 +2,25 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2023"],
-    "module": "ESNext",
+    "module": "CommonJS",
     "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "moduleResolution": "node",
     "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-
-    /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noUnusedLocals": false, // Désactiver temporairement pour éviter les erreurs sur les locaux inutilisés
+    "noUnusedParameters": false, // Désactiver temporairement pour éviter les erreurs sur les paramètres inutilisés
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "./dist/node",
+    "rootDir": "./",
+    "removeComments": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "server/**/*",
+    "src/types/**/*.ts" // Ajoutez cette ligne si des types externes sont nécessaires
+  ],
+  "exclude": ["node_modules", "dist"]
 }

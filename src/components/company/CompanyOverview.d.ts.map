@@ -1,0 +1,1 @@
+{"version":3,"file":"CompanyOverview.d.ts","sourceRoot":"","sources":["CompanyOverview.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAI1B,OAAO,EAAE,eAAe,EAAE,MAAM,aAAa,CAAC;AAE9C,UAAU,oBAAoB;IAC5B,QAAQ,EAAE,eAAe,CAAC;IAC1B,MAAM,EAAE,MAAM,IAAI,CAAC;CACpB;AAED,eAAO,MAAM,eAAe,EAAE,KAAK,CAAC,EAAE,CAAC,oBAAoB,CAsE1D,CAAC"}
