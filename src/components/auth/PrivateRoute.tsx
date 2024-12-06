@@ -1,16 +1,17 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
-export const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
+interface PrivateRouteProps {
+  children: JSX.Element;
+}
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+  const token = localStorage.getItem("token"); // Récupérer le token
+  if (!token) {
+    // Si le token est manquant, rediriger vers la page de connexion
+    return <Navigate to="/login" />;
   }
-
-  return <>{children}</>;
+  return children; // Afficher la page protégée si l'utilisateur est connecté
 };
+
+export default PrivateRoute;

@@ -11,12 +11,13 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "Node",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@server/*": ["server/*"]
     },
     "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./",
-    "composite": false, // Désactive si vous n'avez pas besoin de références croisées
+    "composite": false,
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false,
@@ -25,8 +26,5 @@
   },
   "include": ["src", "server"],
   "exclude": ["node_modules", "dist", "build"],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [] // Supprimez si non nécessaire
 }

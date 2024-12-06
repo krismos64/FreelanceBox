@@ -18,7 +18,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Layout: React.FC = () => {
   const { handleLogout } = useAuthService();
-  const { state: authState } = useAuth();
+  const { user } = useAuth(); // Utilisation directe de `user`
 
   return (
     <div className="layout-container">
@@ -61,7 +61,8 @@ const Layout: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {authState.user?.name}
+                    {user?.name || "Invité"}{" "}
+                    {/* Affiche "Invité" si `user` est null */}
                   </p>
                 </div>
               </div>

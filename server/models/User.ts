@@ -35,7 +35,7 @@ export class UserModel {
   // Recherche d'un utilisateur par email
   static async findByEmail(email: string): Promise<User | null> {
     const [rows]: any = await pool.query(
-      "SELECT * FROM users WHERE email = ?",
+      "SELECT id, name, email, password, created_at AS createdAt FROM users WHERE email = ?",
       [email]
     );
 
@@ -43,8 +43,16 @@ export class UserModel {
       return null;
     }
 
-    const user = rows[0];
-    return userSchema.parse(user); // Validation avec Zod
+    try {
+      const user = {
+        ...rows[0],
+        createdAt: rows[0].createdAt || rows[0].created_at,
+      };
+      return userSchema.parse(user);
+    } catch (error) {
+      console.error("User validation error:", error);
+      return null;
+    }
   }
 
   // Recherche d'un utilisateur par ID

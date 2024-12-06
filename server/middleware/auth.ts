@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || "mon_secret_super_securise";
+const JWT_SECRET = process.env.JWT_SECRET || "testsecret123";
 
 export const authMiddleware = (
   req: Request,
