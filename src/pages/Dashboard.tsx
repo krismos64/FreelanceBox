@@ -1,60 +1,72 @@
-import React from 'react';
-import { Euro, FileText, CheckCircle } from 'lucide-react';
-import { DashboardCard } from '../components/dashboard/DashboardCard';
-import { RecentDocuments } from '../components/dashboard/RecentDocuments';
-import { useApp } from '../context/AppContext';
-import { Card } from '../components/ui/Card';
-import { PageTransition } from '../components/PageTransition';
+import React from "react";
+import { Euro, FileText, CheckCircle } from "lucide-react";
+import { DashboardCard } from "../components/dashboard/DashboardCard";
+import { RecentDocuments } from "../components/dashboard/RecentDocuments";
+import { useApp } from "../context/AppContext";
+import { Card } from "../components/ui/Card";
+import { PageTransition } from "../components/PageTransition";
 
 const Dashboard: React.FC = () => {
   const { state } = useApp();
+
+  // Sécurisation pour éviter les erreurs si state.documents est vide ou non défini
+  const documents = state?.documents || [];
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  const monthlyRevenue = state.documents
+  // Calcul du chiffre d'affaires mensuel
+  const monthlyRevenue = documents
     .filter((doc) => {
-      const docDate = new Date(doc.date);
+      const docDate = new Date(doc?.date);
       return (
-        doc.type === 'invoice' &&
-        doc.status === 'Payé' &&
+        doc?.type === "invoice" &&
+        doc?.status === "Payé" &&
         docDate.getMonth() === currentMonth &&
         docDate.getFullYear() === currentYear
       );
     })
-    .reduce((sum, doc) => sum + doc.total, 0);
+    .reduce((sum, doc) => sum + (doc?.total || 0), 0);
 
-  const pendingQuotes = state.documents.filter(
-    (doc) => doc.type === 'quote' && doc.status === 'Envoyé'
+  // Nombre de devis en attente
+  const pendingQuotes = documents.filter(
+    (doc) => doc?.type === "quote" && doc?.status === "Envoyé"
   ).length;
 
-  const paidInvoices = state.documents.filter(
-    (doc) => doc.type === 'invoice' && doc.status === 'Payé'
+  // Nombre de factures payées
+  const paidInvoices = documents.filter(
+    (doc) => doc?.type === "invoice" && doc?.status === "Payé"
   ).length;
 
-  const formattedDate = new Date().toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  // Date formatée pour affichage
+  const formattedDate = currentDate.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return (
     <PageTransition>
       <div className="space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Tableau de bord</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+            Tableau de bord
+          </h1>
         </div>
 
         <Card>
           <p className="text-lg text-gray-800 dark:text-gray-200">
-            Bonjour, nous sommes le {formattedDate}. 
+            Bonjour, nous sommes le {formattedDate}.
             <br />
-            Votre chiffre d'affaires du mois est de {monthlyRevenue.toFixed(2)} €.
+            Votre chiffre d'affaires du mois est de {monthlyRevenue.toFixed(
+              2
+            )}{" "}
+            €.
           </p>
         </Card>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <DashboardCard
             title="Chiffre d'affaires mensuel"

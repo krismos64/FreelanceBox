@@ -1,65 +1,83 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { AuthState, User } from '../types/auth';
+import React, { createContext, useContext, useReducer, ReactNode } from "react";
 
-type AuthAction =
-  | { type: 'LOGIN'; payload: { user: User; token: string } }
-  | { type: 'LOGOUT' };
+// Définir les types pour l'état de l'authentification et les actions
+interface AuthState {
+  isAuthenticated: boolean;
+  user?: object | null; // Remplacez `object` par le type spécifique à votre utilisateur si disponible
+}
 
+interface AuthAction {
+  type: "LOGIN" | "LOGOUT";
+  payload?: { user?: object; token?: string };
+}
+
+// Définir l'état initial
 const initialState: AuthState = {
-  user: null,
-  token: null,
   isAuthenticated: false,
+  user: null,
 };
 
-const AuthContext = createContext<{
-  state: AuthState;
-  dispatch: React.Dispatch<AuthAction>;
-}>({
-  state: initialState,
-  dispatch: () => null,
-});
+// Créer les contextes pour l'état et le dispatch
+const AuthContext = createContext<AuthState | undefined>(undefined);
+const AuthDispatchContext = createContext<
+  React.Dispatch<AuthAction> | undefined
+>(undefined);
 
+// Reducer pour gérer les actions liées à l'authentification
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case 'LOGIN':
+    case "LOGIN":
       return {
-        user: action.payload.user,
-        token: action.payload.token,
+        ...state,
         isAuthenticated: true,
+        user: action.payload?.user || null,
       };
-    case 'LOGOUT':
-      return initialState;
+    case "LOGOUT":
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: null,
+      };
     default:
-      return state;
+      throw new Error(`Unhandled action type: ${action.type}`);
   }
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Fournisseur d'authentification
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    
-    if (token && user) {
-      dispatch({
-        type: 'LOGIN',
-        payload: { token, user: JSON.parse(user) },
-      });
-    }
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ state, dispatch }}>
-      {children}
+    <AuthContext.Provider value={state}>
+      <AuthDispatchContext.Provider value={dispatch}>
+        {children}
+      </AuthDispatchContext.Provider>
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
+// Hook pour accéder à l'état de l'authentification
+export const useAuthState = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuthState must be used within an AuthProvider");
   }
   return context;
+};
+
+// Hook pour accéder au dispatch d'authentification
+export const useAuthDispatch = () => {
+  const context = useContext(AuthDispatchContext);
+  if (!context) {
+    throw new Error("useAuthDispatch must be used within an AuthProvider");
+  }
+  return context;
+};
+
+// Hook combiné pour l'état et le dispatch
+export const useAuth = () => {
+  return {
+    ...useAuthState(),
+    dispatch: useAuthDispatch(),
+  };
 };

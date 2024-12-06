@@ -1,11 +1,10 @@
 import express from "express";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import pool from "../config/database.js";
-
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "mon_secret_super_securise";
 
 // Middleware de validation pour l'enregistrement
 const validateRegisterInput = (req, res, next) => {

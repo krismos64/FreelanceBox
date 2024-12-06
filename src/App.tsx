@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,7 +8,7 @@ import {
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./context/ThemeContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuthState } from "./context/AuthContext";
 import { PrivateRoute } from "./components/auth/PrivateRoute";
 import Layout from "./components/Layout";
 import LoginPage from "./pages/auth/LoginPage";
@@ -39,7 +39,10 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const isAuthenticated = false; // Exemple d'état utilisateur connecté
+
+  // Utiliser le hook pour récupérer l'état d'authentification
+  const { isAuthenticated } = useAuthState();
+
   useNavigationSound();
 
   if (showSplash) {
@@ -53,19 +56,24 @@ const App: React.FC = () => {
           <AppProvider>
             <Router>
               <Routes>
+                {/* Route principale redirigeant selon l'état d'authentification */}
                 <Route
                   path="/"
                   element={
                     isAuthenticated ? (
-                      <Navigate to="/dashboard" />
+                      <Navigate to="/dashboard" replace />
                     ) : (
-                      <OnboardingPage />
+                      <Navigate to="/login" replace />
                     )
                   }
                 />
+
+                {/* Routes publiques */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/onboarding" element={<OnboardingPage />} />
 
+                {/* Routes protégées */}
                 <Route
                   element={
                     <PrivateRoute>
@@ -98,6 +106,8 @@ const App: React.FC = () => {
                   <Route path="/checklist" element={<ChecklistPage />} />
                   <Route path="/company" element={<CompanyPage />} />
                 </Route>
+
+                {/* Route de secours */}
                 <Route path="*" element={<div>404 Page Not Found</div>} />
               </Routes>
               <Toaster position="top-right" />
