@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run vite\"",
     "server": "node server/index.js",
-    "vite": "vite --port 5175",
+    "vite": "vite --port 5173",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "start": "node server/index.js"

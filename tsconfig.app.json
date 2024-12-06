@@ -10,7 +10,7 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": false,
-    "emitDeclarationOnly": false, // Permet de générer des JS exécutables
+    "emitDeclarationOnly": true,
     "declaration": true,
     "declarationMap": true,
     "jsx": "react-jsx",

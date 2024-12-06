@@ -32,11 +32,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5175,
+    port: 5173,
     strictPort: true, // Évite les ports dynamiques
     proxy: {
       "/api": {
-        target: "http://localhost:3001",
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false, // Désactive les vérifications SSL (si nécessaire)
       },
@@ -46,7 +46,7 @@ export default defineConfig({
     port: 4173, // Port différent pour le mode preview
     proxy: {
       "/api": {
-        target: "http://localhost:3001",
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,
       },

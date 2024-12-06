@@ -1,40 +1,32 @@
 {
   "compilerOptions": {
-    "target": "ES2022", // Compatibilité avec les navigateurs récents
-    "module": "ESNext", // Pour utiliser les modules modernes
-    "lib": ["DOM", "ES2022"], // Bibliothèques pour le DOM et ES2022
-    "allowSyntheticDefaultImports": true, // Permet d'importer des modules par défaut
-    "esModuleInterop": true, // Facilite l'import/export entre CommonJS et ESModules
-    "resolveJsonModule": true, // Permet d'importer des fichiers JSON
-    "strict": true, // Active toutes les vérifications strictes
-    "skipLibCheck": true, // Ignore la vérification des types des fichiers de bibliothèque
-    "forceConsistentCasingInFileNames": true, // Assure une cohérence dans la casse des noms de fichiers
-    "moduleResolution": "Node", // Résolution des modules selon Node.js
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["DOM", "ES2022"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
     "paths": {
-      "@/*": ["src/*"] // Alias pour simplifier les importations
+      "@/*": ["src/*"]
     },
-    "baseUrl": ".", // Base pour la résolution des chemins
-    "outDir": "./dist", // Dossier de sortie des fichiers compilés
-    "rootDir": "./", // Dossier racine du projet
-    "composite": true, // Nécessaire pour les références croisées
-    "declaration": true, // Génère des fichiers .d.ts
-    "declarationMap": true, // Génère des fichiers de mappage pour les déclarations
-    "emitDeclarationOnly": false, // Émet le code et les déclarations
-    "isolatedModules": true, // Vérifie les modules isolés
-    "jsx": "react-jsx" // JSX spécifique à React
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "composite": false, // Désactive si vous n'avez pas besoin de références croisées
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "isolatedModules": true,
+    "jsx": "react-jsx"
   },
-  "include": [
-    "src", // Code source principal
-    "server/**/*.ts", // Inclut tous les fichiers TS dans le dossier `server`
-    "electron" // Inclut les fichiers spécifiques à Electron
-  ],
-  "exclude": [
-    "node_modules", // Exclut les dépendances externes
-    "dist", // Exclut les fichiers compilés
-    "build" // Exclut les dossiers de construction
-  ],
+  "include": ["src", "server"],
+  "exclude": ["node_modules", "dist", "build"],
   "references": [
-    { "path": "./tsconfig.app.json" }, // Référence à une configuration pour l'application
-    { "path": "./tsconfig.node.json" } // Référence à une configuration pour Node.js
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ]
 }
