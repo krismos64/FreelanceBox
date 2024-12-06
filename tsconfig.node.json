@@ -11,16 +11,13 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "strict": true,
-    "noUnusedLocals": false, // Désactiver temporairement pour éviter les erreurs sur les locaux inutilisés
-    "noUnusedParameters": false, // Désactiver temporairement pour éviter les erreurs sur les paramètres inutilisés
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist/node",
     "rootDir": "./",
     "removeComments": true
   },
-  "include": [
-    "server/**/*",
-    "src/types/**/*.ts" // Ajoutez cette ligne si des types externes sont nécessaires
-  ],
+  "include": ["server/**/*", "src/types/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

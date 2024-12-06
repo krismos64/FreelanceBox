@@ -1,6 +1,5 @@
-import axios from 'axios';
 import { Client, Document, CompanySettings } from '../types';
-declare const api: axios.AxiosInstance;
+declare const api: import("axios").AxiosInstance;
 export declare const fetchClients: () => Promise<any>;
 export declare const createClient: (client: Omit<Client, "id">) => Promise<any>;
 export declare const updateClient: (id: string, client: Partial<Client>) => Promise<any>;

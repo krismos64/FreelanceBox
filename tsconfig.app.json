@@ -9,8 +9,8 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": false, // Active l'émission
-    "emitDeclarationOnly": true, // Génère uniquement les fichiers .d.ts
+    "noEmit": false,
+    "emitDeclarationOnly": false, // Permet de générer des JS exécutables
     "declaration": true,
     "declarationMap": true,
     "jsx": "react-jsx",
