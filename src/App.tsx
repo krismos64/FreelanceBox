@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  Link,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -17,17 +18,6 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import Dashboard from "./pages/Dashboard";
-import QuoteList from "./pages/QuoteList";
-import InvoiceList from "./pages/InvoiceList";
-import ClientList from "./pages/ClientList";
-import Stats from "./pages/Stats";
-import ChecklistPage from "./pages/ChecklistPage";
-import CompanyPage from "./pages/CompanyPage";
-import CreateDocument from "./pages/CreateDocument";
-import EditDocument from "./pages/EditDocument";
-import Planning from "./components/Planning";
-import SplashScreen from "./components/SplashScreen";
-import { useNavigationSound } from "./utils/sound";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,91 +40,80 @@ const AppRoutes: React.FC = () => {
   }
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+    <>
+      {/* Navigation dynamique */}
+      <header>
+        <nav className="flex justify-between p-4 bg-gray-100">
+          <Link to="/" className="font-bold">
+            FreelanceBox
+          </Link>
+          <div>
+            {!isAuthenticated ? (
+              <>
+                <Link to="/login" className="mx-2">
+                  Se connecter
+                </Link>
+                <Link to="/register" className="mx-2">
+                  S'inscrire
+                </Link>
+              </>
+            ) : (
+              <Link to="/dashboard" className="mx-2">
+                Mon Espace
+              </Link>
+            )}
+          </div>
+        </nav>
+      </header>
 
-      {/* Routes publiques */}
-      <Route
-        path="/login"
-        element={
-          !isAuthenticated ? (
-            <LoginPage />
-          ) : (
-            <Navigate to="/dashboard" replace />
-          )
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          !isAuthenticated ? (
-            <RegisterPage />
-          ) : (
-            <Navigate to="/dashboard" replace />
-          )
-        }
-      />
-      <Route
-        path="/onboarding"
-        element={
-          !isAuthenticated ? (
-            <OnboardingPage />
-          ) : (
-            <Navigate to="/dashboard" replace />
-          )
-        }
-      />
+      {/* Déclaration des routes */}
+      <Routes>
+        <Route path="/" element={<OnboardingPage />} />
 
-      {/* Routes protégées */}
-      {isAuthenticated && (
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/planning" element={<Planning />} />
-          <Route path="/quotes" element={<QuoteList />} />
-          <Route path="/quotes/new" element={<CreateDocument type="quote" />} />
-          <Route
-            path="/quotes/:id/edit"
-            element={<EditDocument type="quote" />}
-          />
-          <Route path="/invoices" element={<InvoiceList />} />
-          <Route
-            path="/invoices/new"
-            element={<CreateDocument type="invoice" />}
-          />
-          <Route
-            path="/invoices/:id/edit"
-            element={<EditDocument type="invoice" />}
-          />
-          <Route path="/clients" element={<ClientList />} />
-          <Route path="/stats" element={<Stats />} />
-          <Route path="/checklist" element={<ChecklistPage />} />
-          <Route path="/company" element={<CompanyPage />} />
-        </Route>
-      )}
+        {/* Routes publiques */}
+        <Route
+          path="/login"
+          element={
+            !isAuthenticated ? (
+              <LoginPage />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            !isAuthenticated ? (
+              <RegisterPage />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
 
-      {/* Route de secours */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Routes protégées */}
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated ? (
+              <Layout>
+                <Dashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        {/* Route de secours */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 };
 
 const App: React.FC = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  useNavigationSound();
-
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
-
   return (
     <Router>
       <QueryClientProvider client={queryClient}>

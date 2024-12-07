@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Utilisation de useNavigate pour une redirection propre
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,7 @@ import { login } from "../../services/auth";
 
 const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate(); // Hook pour redirection
 
   const {
     register,
@@ -25,6 +26,7 @@ const LoginPage: React.FC = () => {
   });
 
   useEffect(() => {
+    // Gestion du thème clair pour la page de connexion
     document.documentElement.classList.remove("dark");
     document.documentElement.classList.add("light");
     return () => document.documentElement.classList.remove("light");
@@ -39,11 +41,14 @@ const LoginPage: React.FC = () => {
         throw new Error("Réponse du serveur invalide");
       }
 
+      // Stocker les informations utilisateur
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
 
       showSuccess("Connexion réussie");
-      window.location.href = "/dashboard";
+
+      // Redirection vers OnboardingPage avec mise à jour dynamique
+      navigate("/");
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
       showError("Échec de la connexion. Veuillez vérifier vos identifiants.");
@@ -60,6 +65,7 @@ const LoginPage: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="max-w-md w-full"
       >
+        {/* En-tête de la page */}
         <div className="flex flex-col items-center mb-8">
           <motion.img
             src="/logo.png"
@@ -77,6 +83,7 @@ const LoginPage: React.FC = () => {
           </p>
         </div>
 
+        {/* Formulaire de connexion */}
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <form
             onSubmit={handleSubmit(handleLoginSubmit)}
@@ -139,6 +146,7 @@ const LoginPage: React.FC = () => {
             </Button>
           </form>
 
+          {/* Lien vers la page d'inscription */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Pas encore de compte ?{" "}

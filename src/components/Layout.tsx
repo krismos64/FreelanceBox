@@ -18,26 +18,27 @@ import { useAuth } from "../context/AuthContext";
 
 const Layout: React.FC = () => {
   const { handleLogout } = useAuthService();
-  const { user } = useAuth(); // Utilisation directe de `user`
+  const { user } = useAuth(); // Utilisation directe de l'utilisateur connecté
 
   return (
-    <div className="layout-container">
+    <div className="layout-container flex">
+      {/* Sidebar */}
       <motion.aside
-        className="sidebar"
+        className="sidebar w-64 bg-white dark:bg-gray-900 h-screen p-4 shadow-lg"
         initial={{ x: -20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
+        {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 text-transparent bg-clip-text">
-              FreelanceBox
-            </h1>
-          </div>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 text-transparent bg-clip-text">
+            FreelanceBox
+          </h1>
           <ThemeToggle />
         </div>
 
-        <div className="flex flex-col h-[calc(100vh-6rem)] justify-between">
+        {/* Navigation */}
+        <div className="flex flex-col h-full justify-between">
           <nav className="space-y-2">
             <NavItem icon={<LayoutGrid />} text="Tableau de bord" to="/" />
             <NavItem icon={<Calendar />} text="Planning" to="/planning" />
@@ -49,6 +50,7 @@ const Layout: React.FC = () => {
             <NavItem icon={<Building2 />} text="Mon entreprise" to="/company" />
           </nav>
 
+          {/* User Info & Logout */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,7 +64,10 @@ const Layout: React.FC = () => {
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
                     {user?.name || "Invité"}{" "}
-                    {/* Affiche "Invité" si `user` est null */}
+                    {/* Affiche "Invité" si l'utilisateur est null */}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {user?.email || "Pas d'adresse email"}
                   </p>
                 </div>
               </div>
@@ -79,7 +84,8 @@ const Layout: React.FC = () => {
         </div>
       </motion.aside>
 
-      <main className="main-content">
+      {/* Main Content */}
+      <main className="main-content flex-1 bg-gray-50 dark:bg-gray-800 p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,12 +111,16 @@ const NavItem: React.FC<NavItemProps> = ({ icon, text, to }) => {
   return (
     <Link to={to} className="group">
       <motion.div
-        className={`nav-item ${isActive ? "active" : ""}`}
+        className={`nav-item flex items-center gap-4 px-4 py-2 rounded-md transition-colors ${
+          isActive
+            ? "bg-primary-500 text-white"
+            : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+        }`}
         whileHover={{ x: 4 }}
         whileTap={{ scale: 0.98 }}
       >
-        <span className="nav-item-icon">{icon}</span>
-        <span>{text}</span>
+        <span className="nav-item-icon w-6 h-6">{icon}</span>
+        <span className="font-medium">{text}</span>
       </motion.div>
     </Link>
   );
